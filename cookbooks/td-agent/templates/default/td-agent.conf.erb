@@ -1,0 +1,58 @@
+# Source descriptions
+## built-in TCP input
+<source>
+  type forward
+  port 24224
+</source>
+
+## HTTP input
+<source>
+  type http
+  port 8888
+</source>
+
+# Match descriptions
+## Treasure Data output
+## match events whose tag is td.DATABASE.TABLE
+<match td.*.*>
+  type tdlog
+  apikey <%= node['td_agent']['api_key'] %>
+  buffer_type file
+  buffer_path /var/log/td-agent/buffer/td
+</match>
+
+## match tag=debug.** and dump to console
+<match debug.**>
+  type stdout
+</match>
+
+##### Nginx
+
+## Access Log Tail
+#<source>
+#  tag         nginx.access
+#  type        mytail
+#  path        /var/log/nginx/access.log
+#  format      /^(?<host>[^ ]*) [^ ]* (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^ ]*) +\S*)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)" "(?<fowarded_for>[^\"]*)" "(?<fowarded_proto>[^\"]*)" "(?<fowarded_port>[^\"]*)" "(?<http_host>[^\"]*)" (?<response_time>[^ ]*))?$/
+#  time_format %d/%b/%Y:%H:%M:%S %z
+#  to_i        size
+#  to_f        response_time
+#</source>
+
+# Access Log Tail LTSV ver.
+<source>
+  tag         nginx.access
+  type        tail_labeled_tsv
+  path        /var/log/nginx/access.log
+  pos_file    /tmp/fluent.nginx.access.log.pos
+#  time_key    time
+#  time_format %d/%b/%Y:%H:%M:%S %z
+</source>
+
+# Access Log Transfer
+<match nginx.**>
+  type forward
+  <server>
+    host <%= node['td_agent']['access_log']['forward_to'] %>
+  </server>
+</match>

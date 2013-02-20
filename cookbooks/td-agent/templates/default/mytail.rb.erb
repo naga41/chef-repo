@@ -1,0 +1,36 @@
+#@config
+#<source>
+# type mytail
+# format apache
+# path /var/log/httpd/access_log
+# tag apache.access
+# to_i size,code
+# to_f response_time
+#</source>
+
+module Fluent
+class MyTail < TailInput
+  Fluent::Plugin.register_input('mytail', self)
+
+  config_param :to_i, :string
+  config_param :to_f, :string
+
+  def configure(conf)
+    super
+
+    @to_i = @to_i.split(',').map {|path| path.strip }
+    @to_f = @to_f.split(',').map {|path| path.strip }
+  end
+
+  def parse_line(line)
+    time, record = @parser.parse(line)
+    @to_i.each {|key|
+      record[key] = record[key].to_i
+    }
+    @to_f.each {|key|
+      record[key] = record[key].to_f
+    }
+    return time, record
+  end
+end
+end
