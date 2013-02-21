@@ -15,9 +15,9 @@ Vagrant::Config.run do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.define :ubuntu_server_12_04 do |c|
+  config.vm.define :ubuntu_12_04 do |c|
 
-    c.vm.box = "ubuntu_server_12_04"
+    c.vm.box = "ubuntu_12_04"
     # The url from where the 'c.vm.box' box will be fetched if it
     # doesn't already exist on the user's system.
     # c.vm.box_url = "http://domain.com/path/to/above.box"
